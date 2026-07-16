@@ -81,12 +81,17 @@ Checks the current version dates and changes for a law or standard.
 
 ```json
 {
-  "search_input": "string",
+  "process_input": "data",
+  "normify_identifier": ["string"],
+  "kataster": "string"
  }
 ```
 
 **Parameters:**
-- `search_input` : freely formulated input or company name (required)
+- `process_input` : Process Documentation
+  - Pictures: PNG, JPEG
+  - Documents: PDF, DOCX, PPTX,
+  - Structure document: XML, ...
 
 If a search input is provided, the API returns a list of relavent law/standards. 
 
@@ -152,6 +157,17 @@ curl --location 'https://app.normify.me/research/api/discover/' \
   }
 }
 ```
+
+# Disclaimer:
+
+This repository and its contents (code, documentation, templates, etc.) may reference, implement, or be inspired by international standards such as ISO 9001, ISO 14001, ISO 27001, and others. However, you are solely responsible for:
+
+Obtaining and using official copies of any referenced standards from the International Organization for Standardization (ISO) or its authorized distributors.
+Ensuring that your use of such standards complies with all applicable laws, regulations, and licensing terms set by ISO or the relevant standards body.
+Verifying that your intended use (e.g., implementation, certification, or commercial use) is permitted under the licenses you hold for these standards.
+We do not provide, distribute, or license any ISO standards or other normative documents. Any references to standards in this repository are for informational and educational purposes only and do not replace the official documents.
+
+
 
 ### Common Error Codes
 
