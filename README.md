@@ -99,13 +99,14 @@ If a search input is provided, the API returns a list of relavent law/standards.
 
 ```json
 {
-  "success": "boolean",
-  "data": [
+  "overall_coverage": "boolean",
+
+  "standard": [
         {
             "identifier": "string"
             "name": "string"
-            "link": "string"
-            "normify_identifier": "string"
+            "coverage": "decimal"
+            "recomendations": "text"
         }
    ]
 }
