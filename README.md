@@ -8,7 +8,7 @@
 
 The API allows users to upload process diagrams or descriptions in any format.
 
-Based on common management system standards and, where applicable, existing data in the legal registry (), sections or chapters of individual standards or laws are assigned to the process, and, where appropriate, suggestions for improvement and information on overall coverage are provided.
+Based on common management system standards and, where applicable, existing data in the legal registry (https://github.com/Normify-me/legal-discover-api), sections or chapters of individual standards or laws are assigned to the process, and, where appropriate, suggestions for improvement and information on overall coverage are provided.
 
 
 | **Category**                | **Standard**               | **English Title**                                      |
