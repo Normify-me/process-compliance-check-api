@@ -158,6 +158,11 @@ curl --location 'https://app.normify.me/research/api/discover/' \
   }
 }
 ```
+### Common Error Codes
+
+- `MISSING_PARAMETERS`: At least one parameter is required
+- `INVALID_DATE_FORMAT`: Invalid date format
+- `STANDARD_NOT_FOUND`: Law or standard not found
 
 # Disclaimer:
 
@@ -170,8 +175,4 @@ We do not provide, distribute, or license any ISO standards or other normative d
 
 
 
-### Common Error Codes
 
-- `MISSING_PARAMETERS`: At least one parameter is required
-- `INVALID_DATE_FORMAT`: Invalid date format
-- `STANDARD_NOT_FOUND`: Law or standard not found
