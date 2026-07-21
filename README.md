@@ -167,7 +167,7 @@ curl --location 'https://app.normify.me/research/api/discover/' \
 - `INVALID_DATE_FORMAT`: Invalid date format
 - `STANDARD_NOT_FOUND`: Law or standard not found
 
-# Disclaimer:
+## Disclaimer:
 
 This repository and its contents (code, documentation, templates, etc.) may reference, implement, or be inspired by international standards such as ISO 9001, ISO 14001, ISO 27001, and others. However, you are solely responsible for:
 
