@@ -88,10 +88,12 @@ Checks the current version dates and changes for a law or standard.
 ```
 
 **Parameters:**
-- `process_input` : Process Documentation
+- `process_input`: Process Documentation
   - Pictures: PNG, JPEG
   - Documents: PDF, DOCX, PPTX,
   - Structure document: XML, ...
+- `normify_identifier`: IDs of the standards you want to check (optional)
+- `kataster`: IDs of the kataster whose underlying standards you would like to use to check the process
 
 If a search input is provided, the API returns a list of relavent law/standards. 
 
@@ -113,10 +115,11 @@ If a search input is provided, the API returns a list of relavent law/standards.
 ```
 
 **Response Fields:**
-- `success`: Indicates if the requested was processed
+- `overall_coverage`: Total coverage across all selected standards, in percent
 - `identifier`: Short title of the standard
 - `name`: Complete title of the standard
-- `normify_identifier`: ID of the standard in normify database to request all other meta-date and ki.fields via https://github.com/Normify-me/legal-update-api
+- `coverage`: coverage of a standasrd in percent
+- `recomandations`: Suggestions for improvement to increase coverage with respect to a standard
 
 
 ## Examples
