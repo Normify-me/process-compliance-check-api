@@ -103,7 +103,7 @@ If a search input is provided, the API returns a list of relavent law/standards.
 
 ```json
 {
-  "overall_coverage": "boolean",
+  "overall_coverage": "decimal",
 
   "standard": [
         {
