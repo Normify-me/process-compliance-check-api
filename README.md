@@ -110,7 +110,10 @@ If a search input is provided, the API returns a list of relavent law/standards.
             "identifier": "string"
             "name": "string"
             "coverage": "decimal"
-            "recomendations": "text"
+            "recomendations": [
+                "chapter" : "string"
+                "requirement" : "string"
+                "relevance" : "string"
         }
    ]
 }
@@ -122,6 +125,9 @@ If a search input is provided, the API returns a list of relavent law/standards.
 - `name`: Complete title of the standard
 - `coverage`: coverage of a standasrd in percent
 - `recomandations`: Suggestions for improvement to increase coverage with respect to a standard
+- `chapter`: Chapter number of the standard
+- `requirement`: Quote from the standard
+- `relevance`: Relevance to the process: high, medium, low
 
 
 ## Examples
