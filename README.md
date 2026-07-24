@@ -111,6 +111,7 @@ If a search input is provided, the API returns a list of relavent law/standards.
             "name": "string"
             "coverage": "decimal"
             "recomendations": [
+                "recomendation" : "string"
                 "chapter" : "string"
                 "requirement" : "string"
                 "relevance" : "string"
