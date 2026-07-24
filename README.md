@@ -114,6 +114,7 @@ If a search input is provided, the API returns a list of relavent law/standards.
                 "chapter" : "string"
                 "requirement" : "string"
                 "relevance" : "string"
+            ]
         }
    ]
 }
