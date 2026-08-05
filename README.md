@@ -6,160 +6,276 @@
 
 ## Overview
 
-The API allows users to upload process diagrams or descriptions in any format.
-
-Based on common management system standards and, where applicable, existing data in the legal registry (https://github.com/Normify-me/legal-discover-api), sections or chapters of individual standards or laws are assigned to the process, and, where appropriate, suggestions for improvement and information on overall coverage are provided.
+The Process Compliance Check API analyzes business process documentation against one or more Normify standards. It maps processes to norm chapters, identifies coverage gaps, and returns requirement-level findings with evidence, relevance, and recommendations.
 
 ## Standards
 
 In addition to the following management standards, any other legal bases or standards (https://normify.me/data/) for which full texts are available may also be used for analysis.
 
-| **Category**                | **Standard**               | **English Title**                                      |
-|-----------------------------|----------------------------|--------------------------------------------------------|
-| **Standard**                | ISO 9001                   | Quality Management Systems – Requirements              |
-|                             | ISO 14001                  | Environmental Management Systems – Requirements        |
-|                             | ISO 45001                  | Occupational Health and Safety Management Systems      |
-| **Security & IT**           | ISO/IEC 27001              | Information Security Management Systems – Requirements |
-|                             | ISO/IEC 27701              | Privacy Information Management Systems – Requirements |
-| **Energy & Resources**      | ISO 50001                  | Energy Management Systems – Requirements              |
-|                             | ISO 46001                  | Water Efficiency Management Systems – Requirements    |
-| **Risk, Compliance, Resilience** | ISO 31000          | Risk Management – Guidelines                            |
-|                             | ISO 37301                  | Compliance Management Systems – Requirements           |
-|                             | ISO 22301                  | Business Continuity Management Systems – Requirements  |
-| **Operations & Organization** | ISO 41001              | Facility Management – Management Systems – Requirements|
-|                             | ISO 55001                  | Asset Management – Management Systems – Requirements    |
-|                             | ISO 30401                  | Knowledge Management Systems – Requirements            |
-| **Security / Supply Chain** | ISO 28000                  | Supply Chain Security Management Systems – Requirements|
+| **Category**                | **Standard**               | **English Title**                                      | **normify_identifier** |
+|-----------------------------|----------------------------|--------------------------------------------------------|------------------------|
+| **Standard**                | ISO 9001                   | Quality Management Systems – Requirements              | [DmBUbhYLyK6BDimPv7bHtZ](https://app.normify.me/research/standards/detail/DmBUbhYLyK6BDimPv7bHtZ/){:target="_blank"}             |
+| **Security & IT**           | ISO/IEC 27001              | Information Security Management Systems – Requirements | [oHFBv3JyrjDW5LLbYfnnUo](https://app.normify.me/research/standards/detail/oHFBv3JyrjDW5LLbYfnnUo/){:target="_blank"}
 
----
+Analysis is **asynchronous**:
 
-## Base URL
+1. `POST` starts the job and returns an `analysis_id` (HTTP 202).
+2. Poll `GET` with that `analysis_id`. (optional: Webhook)
 
-```
-https://app.normify.me/research/api/discover/
-```
+The input given by the user is a **full process landscape** (multiple processes).
 
-## Headers
+## Base URLs
+
+| Environment | Base |
+| --- | --- |
+| Production | `https://app.normify.me/compliance-check/api/check/` |
+| Local | `http://localhost:8000/compliance-check/api/check/` |
+
+## Authentication
+
+The use of this API requires premium permissions. Please contact Normify Admins to receive them.
 
 ```
-Content-Type: "application/json"
+Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
 
-### Authentication
+### How to get the bearer token
 
-The API uses API keys for authentication. Include your API key in the header of each request:
+**POST** `https://app.normify.me/api/token/`
 
-```
-Authorization: Bearer YOUR_API_KEY
-```
-
-#### How to get the bearer token
-
-Send a post request to:
-
-**Endpoint** `https://app.normify.me/api/token/`
-
-**Content-Type** `application/json`
-
-**Body (raw json)**
 ```json
 {
-    "email": "YOUREMAIL",
-    "password": "YOURPASSWORD"
+  "email": "YOUREMAIL",
+  "password": "YOURPASSWORD"
 }
 ```
 
-This returns a JSON with a refresh token and an access token. Use the access token for authorization as the bearer token. It has a limited lifetime so it should be fetched once you start a new API request process.
+Use the returned `access` token as the bearer token.
 
 ## Endpoints
 
-### Query Laws and Standards
+### 1. Start analysis
 
-**POST** `'https://app.normify.me/research/api/discover/`
+**POST** `/compliance-check/api/check/`
 
-Checks the current version dates and changes for a law or standard.
+Starts an asynchronous compliance analysis. Nothing runs in the HTTP request; work is enqueued on Celery.
 
-#### Request Body
+#### Request
 
-```json
-{
-  "process_input": "data",
-  "normify_identifier": ["string"],
-  "kataster": "string"
- }
+- **Content-Type**: `multipart/form-data` (recommended when uploading a file) or JSON (text-only)
+- **Required**: process input (file and/or text) **and** at least one standard identifier
+
+| Field | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `process_input_file` | file | one of file/text | — | Process documentation upload |
+| `process_input_text` | string | one of file/text | — | Optional process description text |
+| `normify_identifiers` | string / list | yes | — | One or more standard `normify_identifier` values (comma-separated, JSON array, or repeated form fields) |
+| `webhook_url` | string (URL) | no | — | Callback URL notified when the analysis finishes |
+| `save_process_file` | bool | no | `false` | If `true`, persist the uploaded file on the analysis; otherwise the file is only passed to the worker |
+
+#### Accepted file types
+
+```
+.pdf, .txt, .md, .json, .yml, .yaml, .html, .xml,
+.doc, .docx, .rtf, .odt, .ppt, .pptx, .xls, .xlsx, .csv,
+.png, .jpg, .jpeg, .gif, .webp, .zip
 ```
 
-**Parameters:**
-- `process_input`: Process Documentation
-  - Pictures: PNG, JPEG
-  - Documents: PDF, DOCX, PPTX,
-  - Structure document: XML, ...
-- `normify_identifier`: IDs of the standards you want to check (optional)
-- `kataster`: IDs of the kataster whose underlying standards you would like to use to check the process
+ZIP archives may contain YAML/YML process files that are merged and cleaned for analysis.
 
-If a search input is provided, the API returns a list of relavent law/standards. 
+#### Example (curl)
 
-#### Response
+```bash
+curl -X POST "https://app.normify.me/compliance-check/api/check/" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "process_input_file=@/path/to/prozesse.zip" \
+  -F "process_input_text=Optional complementary description" \
+  -F "normify_identifiers=<NORMIFY_UUID_1>,<NORMIFY_UUID_2>" \
+  -F "webhook_url=https://customer.example.com/hooks/normify"
+```
+
+#### Success response (`202 Accepted`)
 
 ```json
 {
-  "overall_coverage": "decimal",
-
-  "standard": [
-        {
-            "identifier": "string"
-            "name": "string"
-            "coverage": "decimal"
-            "recomendations": [
-                "recomendation" : "string"
-                "chapter" : "string"
-                "requirement" : "string"
-                "relevance" : "string"
-            ]
-        }
-   ]
+  "success": true,
+  "data": {
+    "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+    "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "status": "pending"
+  }
 }
 ```
 
-**Response Fields:**
-- `overall_coverage`: Total coverage across all selected standards, in percent
-- `identifier`: Short title of the standard
-- `name`: Complete title of the standard
-- `coverage`: coverage of a standasrd in percent
-- `recomandations`: Suggestions for improvement to increase coverage with respect to a standard
-- `chapter`: Chapter number of the standard
-- `requirement`: Quote from the standard
-- `relevance`: Relevance to the process: high, medium, low
+| Field | Description |
+| --- | --- |
+| `analysis_id` | Stable id used to poll results (`GET`) and included in the webhook payload |
+| `task_id` | Task id of the enqueued analysis runner |
+| `status` | Initial status (`pending`) |
 
+---
 
-## Examples
+### 2. Poll analysis status / results
 
-Further examples can be found in the [Example folder](./Examples/).
+**GET** `/compliance-check/api/check/<analysis_id>/`
 
-### Example 1: Query with ID
+Returns progress while running, and the full result when finished.
 
-**Request:**
-```
-curl --location 'https://app.normify.me/research/api/discover/' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer ey************' \
---data '{
-"search_input": "Mercedes Benz"
-}'
+#### Example
 
+```bash
+curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e0-87e9-43f10e44eb72/" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-## Error Handling
+#### Response while pending / running (`200 OK`)
 
-### HTTP Status Codes
+```json
+{
+  "success": true,
+  "data": {
+    "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+    "status": "running",
+    "progress": {
+      "completed": 2,
+      "total": 5,
+      "percent": 40.0
+    },
+    "failure_message": ""
+  }
+}
+```
 
-- `200 OK`: Request successful
-- `400 Bad Request`: Invalid request (missing parameters, invalid date format)
-- `401 Unauthorized`: Invalid or missing API key
-- `404 Not Found`: Law or standard not found
-- `500 Internal Server Error`: Server error
+#### Response when completed (`200 OK`)
 
-### Error Response Format
+```json
+{
+  "success": true,
+  "data": {
+    "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+    "status": "completed",
+    "progress": {
+      "completed": 5,
+      "total": 5,
+      "percent": 100.0
+    },
+    "failure_message": "",
+    "summary": {
+      "overall_coverage": 82.4,
+      "matched_requirements": 143,
+      "partially_matched": 18,
+      "mentioned_requirements": 5,
+      "missing_requirements": 31,
+      "standards_analyzed": 2
+    },
+    "result": {
+      "standards": [
+        {
+          "normify_identifier": "…",
+          "identifier": "DIN EN ISO 9001",
+          "name": "Quality Management Systems – Requirements",
+          "status": "completed",
+          "coverage": 88.7,
+          "process_summary": "Kurzfassung der Prozesslandschaft.",
+          "failure_message": "",
+          "chapter_mappings": [
+            {
+              "kind": "mapped",
+              "chapter": "4.4",
+              "title": "Quality Management System and its Processes",
+              "relevance": "high",
+              "reason": "…",
+              "process_title": "Produktion",
+              "process_normify_id": "…",
+              "process_external_id": "id-prod",
+              "recommended_process_title": ""
+            },
+            {
+              "kind": "uncovered",
+              "chapter": "9.2",
+              "title": "Internal Audit",
+              "relevance": "medium",
+              "reason": "Kein Auditprozess vorhanden.",
+              "process_title": "",
+              "process_normify_id": "",
+              "process_external_id": "",
+              "recommended_process_title": "Internes Audit"
+            }
+          ],
+          "requirements": [
+            {
+              "chapter": "4.4",
+              "title": "Quality Management System and its Processes",
+              "requirement": "…",
+              "status": "matched",
+              "relevance": "high",
+              "reason": "…",
+              "process_title": "Produktion",
+              "process_normify_id": "…",
+              "process_external_id": "id-prod",
+              "evidence": [
+                {
+                  "source": "produktion.yaml",
+                  "page": null,
+                  "text": "…"
+                }
+              ],
+              "recommendations": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Status values
+
+| Status | Meaning |
+| --- | --- |
+| `pending` | Created, work not finished |
+| `running` | In progress |
+| `completed` | Finished (may still include partial job failures in `failure_message`) |
+| `failed` | Analysis failed |
+
+#### Requirement `status` values
+
+| Status | Score (for coverage) |
+| --- | --- |
+| `matched` | 1.00 |
+| `partial` | 0.50 |
+| `mentioned` | 0.25 |
+| `missing` | 0.00 |
+
+Relevance weights: `high` = 3, `medium` = 2, `low` = 1.
+
+Coverage =
+
+```
+Σ(requirement score × relevance weight) / Σ(relevance weight) × 100
+```
+
+---
+
+## Webhooks
+
+If `webhook_url` was provided on create, Normify POSTs to that URL when the analysis first reaches a terminal status (`completed` or `failed`):
+
+```json
+{
+  "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+  "status": "completed"
+}
+```
+
+Use `analysis_id` to fetch the full result via `GET /compliance-check/api/check/<analysis_id>/`.
+
+---
+
+## Error handling
+
+### Error response format
 
 ```json
 {
@@ -171,11 +287,21 @@ curl --location 'https://app.normify.me/research/api/discover/' \
   }
 }
 ```
-### Common Error Codes
 
-- `MISSING_PARAMETERS`: At least one parameter is required
-- `INVALID_DATE_FORMAT`: Invalid date format
-- `STANDARD_NOT_FOUND`: Law or standard not found
+### Common error codes
+
+| Code | Status | Meaning |
+| --- | --- | --- |
+| `MISSING_INPUT` | 400 | Neither `process_input_file` nor `process_input_text` provided |
+| `INVALID_FILE_TYPE` | 400 | Uploaded file extension is not allowed |
+| `MISSING_STANDARDS` | 400 | No `normify_identifiers` provided |
+| `STANDARDS_NOT_FOUND` | 400 | None of the identifiers resolved to a standard |
+| `INVALID_WEBHOOK_URL` | 400 | `webhook_url` is not a valid URL |
+| `NOT_FOUND` | 404 | Unknown `analysis_id` (or not owned by the caller) |
+| — | 401 | Missing/invalid JWT |
+| — | 403 | Authenticated but missing `users.compliance_check_api` |
+
+---
 
 ## Disclaimer:
 
@@ -185,7 +311,3 @@ Obtaining and using official copies of any referenced standards from the Interna
 Ensuring that your use of such standards complies with all applicable laws, regulations, and licensing terms set by ISO or the relevant standards body.
 Verifying that your intended use (e.g., implementation, certification, or commercial use) is permitted under the licenses you hold for these standards.
 We do not provide, distribute, or license any ISO standards or other normative documents. Any references to standards in this repository are for informational and educational purposes only and do not replace the official documents.
-
-
-
-
