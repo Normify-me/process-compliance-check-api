@@ -10,7 +10,7 @@ The Process Compliance Check API analyzes business process documentation against
 
 ## Standards
 
-In addition to the following management standards, any other legal bases or standards (https://normify.me/data/) for which full texts are available may also be used for analysis.
+In addition to the following management standards, any other legal bases or standards (https://normify.me/data/) for which full texts are available may also be used for analysis. All other management system standards will follow shortly. Please note the disclaimer below.
 
 | **Category**                | **Standard**               | **English Title**                                      | **normify_identifier** |
 |-----------------------------|----------------------------|--------------------------------------------------------|------------------------|
