@@ -14,8 +14,8 @@ In addition to the following management standards, any other legal bases or stan
 
 | **Category**                | **Standard**               | **English Title**                                      | **normify_identifier** |
 |-----------------------------|----------------------------|--------------------------------------------------------|------------------------|
-| **Standard**                | ISO 9001                   | Quality Management Systems – Requirements              | [DmBUbhYLyK6BDimPv7bHtZ](https://app.normify.me/research/standards/detail/DmBUbhYLyK6BDimPv7bHtZ/){:target="_blank"}             |
-| **Security & IT**           | ISO/IEC 27001              | Information Security Management Systems – Requirements | [oHFBv3JyrjDW5LLbYfnnUo](https://app.normify.me/research/standards/detail/oHFBv3JyrjDW5LLbYfnnUo/){:target="_blank"}
+| **Standard**                | ISO 9001                   | Quality Management Systems – Requirements              | [DmBUbhYLyK6BDimPv7bHtZ](https://app.normify.me/research/standards/detail/DmBUbhYLyK6BDimPv7bHtZ/)            |
+| **Security & IT**           | ISO/IEC 27001              | Information Security Management Systems – Requirements | [oHFBv3JyrjDW5LLbYfnnUo](https://app.normify.me/research/standards/detail/oHFBv3JyrjDW5LLbYfnnUo/)
 
 Analysis is **asynchronous**:
 
