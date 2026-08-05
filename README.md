@@ -26,10 +26,8 @@ The input given by the user is a **full process landscape** (multiple processes)
 
 ## Base URLs
 
-| Environment | Base |
-| --- | --- |
-| Production | `https://app.normify.me/compliance-check/api/check/` |
-| Local | `http://localhost:8000/compliance-check/api/check/` |
+`https://app.normify.me/compliance-check/api/check/` |
+
 
 ## Authentication
 
