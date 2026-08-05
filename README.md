@@ -228,6 +228,85 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 }
 ```
 
+
+##### Top-level `data` fields
+
+| Field | Description |
+| --- | --- |
+| `success` | Always `true` for successful HTTP responses (errors use `success: false`; see [Error handling](#error-handling)). |
+| `data.analysis_id` | Stable id of this analysis (same as returned by `POST`). |
+| `data.status` | Overall analysis status (`pending`, `running`, `completed`, or `failed`). |
+| `data.progress.completed` | Number of finished worker jobs so far. |
+| `data.progress.total` | Total worker jobs for this analysis. |
+| `data.progress.percent` | Progress percentage (`completed / total × 100`, rounded to one decimal). |
+| `data.failure_message` | Empty on success; otherwise a human-readable note about job-level or analysis failures (even when overall status is `completed`). |
+| `data.summary` | Aggregate counts and coverage across all standards (only present when status is `completed` or `failed`). |
+| `data.result` | Full per-standard result payload (only present when status is `completed` or `failed`). |
+
+##### `summary` fields
+
+| Field | Description |
+| --- | --- |
+| `overall_coverage` | Weighted requirement coverage across all selected standards (0–100). See coverage formula under [Requirement status values](#requirement-status-values). |
+| `matched_requirements` | Count of requirements with status `matched`. |
+| `partially_matched` | Count of requirements with status `partial`. |
+| `mentioned_requirements` | Count of requirements with status `mentioned`. |
+| `missing_requirements` | Count of requirements with status `missing`. |
+| `standards_analyzed` | Number of standards included in `result.standards`. |
+
+##### `result.standards[]` fields
+
+| Field | Description |
+| --- | --- |
+| `normify_identifier` | Normify id of the standard (same values accepted in `normify_identifiers` on create). |
+| `identifier` | Short/public identifier of the standard (e.g. `DIN EN ISO 9001`). |
+| `name` | Full display name of the standard. |
+| `status` | Per-standard analysis status (`pending`, `running`, `completed`, or `failed`). |
+| `coverage` | Weighted requirement coverage for this standard only (0–100), or `null` if not yet available. |
+| `process_summary` | Short AI summary of how the process landscape relates to this standard. |
+| `failure_message` | Empty on success; otherwise the failure reason for this standard’s analysis. |
+| `chapter_mappings` | Chapter mappings and uncovered chapters for this standard. |
+| `requirements` | Requirement-level findings with evidence and recommendations. |
+
+##### `chapter_mappings[]` fields
+
+| Field | Description |
+| --- | --- |
+| `kind` | `mapped` if a process covers the chapter; `uncovered` if no suitable process was found. |
+| `chapter` | Chapter or clause number in the standard (e.g. `4.4`). |
+| `title` | Title of that chapter/clause. |
+| `relevance` | Importance of the chapter for the submitted processes: `high`, `medium`, or `low`. |
+| `reason` | Explanation of the mapping or why the chapter is uncovered. |
+| `process_title` | Title of the matched process (`mapped` only; empty for `uncovered`). |
+| `process_normify_id` | Normify-assigned UUID of the matched process (`mapped` only; empty string otherwise). |
+| `process_external_id` | Source-system process id when available (e.g. from YAML `_id`; empty if none). |
+| `recommended_process_title` | Suggested title for a missing process (`uncovered` only; empty for `mapped`). |
+
+##### `requirements[]` fields
+
+| Field | Description |
+| --- | --- |
+| `chapter` | Chapter or clause number the requirement belongs to. |
+| `title` | Title of that chapter/clause. |
+| `requirement` | Text of the requirement being assessed. |
+| `status` | How well the process addresses the requirement: `matched`, `partial`, `mentioned`, or `missing`. |
+| `relevance` | Importance of the requirement for the submitted processes: `high`, `medium`, or `low`. |
+| `reason` | Explanation of the classification. |
+| `process_title` | Title of the process used as primary evidence (empty if none). |
+| `process_normify_id` | Normify UUID of that process (empty string if none). |
+| `process_external_id` | Source-system process id when available (empty if none). |
+| `evidence` | List of supporting excerpts from the submitted documentation. |
+| `recommendations` | Suggested actions to improve coverage (often empty when `status` is `matched`). |
+
+##### `evidence[]` fields
+
+| Field | Description |
+| --- | --- |
+| `source` | Origin of the excerpt (e.g. uploaded filename). |
+| `page` | Page number when applicable (e.g. PDF); otherwise `null`. |
+| `text` | Quoted or summarized evidence text. |
+
+
 #### Status values
 
 | Status | Meaning |
