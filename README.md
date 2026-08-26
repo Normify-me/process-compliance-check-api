@@ -70,7 +70,7 @@ Starts an asynchronous compliance analysis. Nothing runs in the HTTP request; wo
 | `normify_identifiers` | string / list | yes | — | One or more standard `normify_identifier` values (comma-separated, JSON array, or repeated form fields) |
 | `webhook_url` | string (URL) | no | — | Callback URL notified when the analysis finishes |
 | `save_process_file` | bool | no | `false` | If `true`, the analysis file is stored in the Normify database; otherwise the file is only passed to the worker and never saved. |
-| `customer_id` | string | no | None | If given, the customer_id is saved with the analysis (allows for billing by customer) |
+| `customer_id` | string | no | None | If given, the customer_id is saved with the analysis (allows for billing by customer). Max length is 255. |
 
 #### Accepted file types
 
