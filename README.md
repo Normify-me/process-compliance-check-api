@@ -112,6 +112,7 @@ curl -X POST "https://app.normify.me/compliance-check/api/check/" \
 | `analysis_id` | Stable id used to poll results (`GET`) and included in the webhook payload |
 | `task_id` | Task id of the enqueued analysis runner |
 | `status` | Initial status (`pending`) |
+| `customer_id` | Customer identifier (opt.) |
 
 ---
 
@@ -154,6 +155,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
   "success": true,
   "data": {
     "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+    "customer_id": "xAidfe",
     "status": "completed",
     "progress": {
       "completed": 5,
@@ -238,6 +240,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 | --- | --- |
 | `success` | Always `true` for successful HTTP responses (errors use `success: false`; see [Error handling](#error-handling)). |
 | `data.analysis_id` | Stable id of this analysis (same as returned by `POST`). |
+| `data.customer_id` | Customer identifier (opt.). |
 | `data.status` | Overall analysis status (`pending`, `running`, `completed`, or `failed`). |
 | `data.progress.completed` | Number of finished worker jobs so far. |
 | `data.progress.total` | Total worker jobs for this analysis. |
