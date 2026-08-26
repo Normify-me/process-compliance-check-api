@@ -308,7 +308,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 
 | Field | Description |
 | --- | --- |
-| `source` | Origin of the excerpt (e.g. uploaded filename). |
+| `source` | Origin of the finding in the file (experimental variable. May not return desired results depending on the input file). |
 | `page` | Page number when applicable (e.g. PDF); otherwise `null`. |
 | `text` | Quoted or summarized evidence text. |
 
