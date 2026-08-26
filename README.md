@@ -69,7 +69,8 @@ Starts an asynchronous compliance analysis. Nothing runs in the HTTP request; wo
 | `process_input_text` | string | one of file/text | — | Optional process description text |
 | `normify_identifiers` | string / list | yes | — | One or more standard `normify_identifier` values (comma-separated, JSON array, or repeated form fields) |
 | `webhook_url` | string (URL) | no | — | Callback URL notified when the analysis finishes |
-| `save_process_file` | bool | no | `false` | If `true`, persist the uploaded file on the analysis; otherwise the file is only passed to the worker |
+| `save_process_file` | bool | no | `false` | If `true`, the analysis file is stored in the Normify database; otherwise the file is only passed to the worker and never saved. |
+| `customer_id` | string | no | None | If given, the customer_id is saved with the analysis (allows for billing by customer) |
 
 #### Accepted file types
 
@@ -100,6 +101,7 @@ curl -X POST "https://app.normify.me/compliance-check/api/check/" \
   "data": {
     "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
     "task_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "customer_id": "xAidfe",
     "status": "pending"
   }
 }
@@ -133,6 +135,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
   "success": true,
   "data": {
     "analysis_id": "4f18cb4b-fb2b-42e0-87e9-43f10e44eb72",
+    "customer_id": "xAidfe",
     "status": "running",
     "progress": {
       "completed": 2,
