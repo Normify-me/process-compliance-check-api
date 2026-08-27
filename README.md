@@ -327,8 +327,8 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 | Status | Score (for coverage) |
 | --- | --- |
 | `matched` | 1.00 |
-| `partial` | 0.50 |
-| `mentioned` | 0.25 |
+| `partial` | 0.80 |
+| `mentioned` | 0.50 |
 | `missing` | 0.00 |
 
 Relevance weights: `major_nonconformity` = 1, `minor_nonconformity` = 1, `observation` = 0.
