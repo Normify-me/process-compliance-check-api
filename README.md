@@ -211,7 +211,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
               "title": "Quality Management System and its Processes",
               "requirement": "…",
               "status": "matched",
-              "relevance": "high",
+              "relevance": "major_nonconformity",
               "reason": "…",
               "process_title": "Produktion",
               "process_normify_id": "…",
@@ -296,7 +296,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 | `title` | Title of that chapter/clause. |
 | `requirement` | Text of the requirement being assessed. |
 | `status` | How well the process addresses the requirement: `matched`, `partial`, `mentioned`, or `missing`. |
-| `relevance` | Importance of the requirement for the submitted processes: `high`, `medium`, or `low`. |
+| `relevance` | Importance of the requirement for the submitted processes: `major_nonconformity`, `minor_nonconformity`, or `observation`. |
 | `reason` | Explanation of the classification. |
 | `process_title` | Title of the process used as primary evidence (empty if none). |
 | `process_normify_id` | Normify UUID of that process (empty string if none). |
@@ -331,7 +331,7 @@ curl -X GET "https://app.normify.me/compliance-check/api/check/4f18cb4b-fb2b-42e
 | `mentioned` | 0.25 |
 | `missing` | 0.00 |
 
-Relevance weights: `high` = 3, `medium` = 2, `low` = 1.
+Relevance weights: `major_nonconformity` = 1, `minor_nonconformity` = 1, `observation` = 0.
 
 Coverage =
 
